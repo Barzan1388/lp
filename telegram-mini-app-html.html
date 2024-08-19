@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini-App</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: black;
+            color: white;
+        }
+        
+        #content {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        #navbar {
+            height: 80px;
+            max-width: 1080px;
+            width: 100%;
+            margin: 0 auto;
+            background-color: rgba(87, 87, 87, 0.205);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .moon {
+            width: 250px;
+            height: 250px;
+            background-color: #fff1a0;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        
+        .task-box {
+            background-color: rgba(32, 30, 30, 0);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .task-logo {
+            width: 15px;
+            height: 15px;
+            background-color: rgba(240, 216, 0, 0);
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        #starry-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 173px;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: rgb(255, 255, 255);
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+        }
+        
+        @keyframes twinkle {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="content"></div>
+        <div id="navbar">
+            <div class="nav-item" onclick="setActiveTab('home')">
+                <div class="nav-icon"></div>
+                <div>Home</div>
+            </div>
+            <div class="nav-item" onclick="setActiveTab('tasks')">
+                <div class="nav-icon">📋</div>
+                <div>Tasks</div>
+            </div>
+            <div class="nav-item" onclick="setActiveTab('friend')">
+                <div class="nav-icon">👥</div>
+                <div>Friend</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let activeTab = 'home';
+        const taskStatus = {
+            youtube: false,
+            telegram: false,
+            twitter: false
+        };
+
+        function setActiveTab(tab) {
+            activeTab = tab;
+            renderContent();
+        }
+
+        function handleTaskCheck(task) {
+            taskStatus[task] = true;
+            renderContent();
+        }
+
+        function generateShareableLink() {
+            return 'https://t.me/share/url?url=Join%20our%20app!';
+        }
+
+        function renderContent() {
+            const content = document.getElementById('content');
+            content.innerHTML = '';
+
+            if (activeTab === 'home') {
+                content.innerHTML = `
+                    <div id="starry-bg"></div>
+                    <div class="moon"></div>
+                    <h1>OFF</h1>
+                `;
+                createStarryBackground();
+            } else if (activeTab === 'tasks') {
+                content.innerHTML = `
+                    <div class="moon"></div>
+                    <h2>Perform Tasks</h2>
+                    <div class="task-box">
+                        <div style="display: flex; align-items: center;">
+                            <div class="task-logo"></div>
+                            <span>Subscribe to YouTube</span>
+                        </div>
+                        <button onclick="handleTaskCheck('youtube')" ${taskStatus.youtube ? 'disabled' : ''}>
+                            ${taskStatus.youtube ? '✓' : 'Check'}
+                        </button>
+                    </div>
+                    <div class="task-box">
+                        <div style="display: flex; align-items: center;">
+                            <div class="task-logo"></div>
+                            <span>Follow our Telegram</span>
+                        </div>
+                        <button onclick="handleTaskCheck('telegram')" ${taskStatus.telegram ? 'disabled' : ''}>
+                            ${taskStatus.telegram ? '✓' : 'Check'}
+                        </button>
+                    </div>
+                    <div class="task-box">
+                        <div style="display: flex; align-items: center;">
+                            <div class="task-logo"></div>
+                            <span>Follow our X</span>
+                        </div>
+                        <button onclick="handleTaskCheck('twitter')" ${taskStatus.twitter ? 'disabled' : ''}>
+                            ${taskStatus.twitter ? '✓' : 'Check'}
+                        </button>
+                    </div>
+                `;
+            } else if (activeTab === 'friend') {
+                content.innerHTML = `
+                    <div style="width: 100%; height: 150px; background-color: gray; margin-bottom: 20px;"></div>
+                    <div style="width: 200px; height: 200px; border: 2px solid white; margin-bottom: 20px;"></div>
+                    <button onclick="inviteFriends()">Invite Friends</button>
+                `;
+            }
+        }
+
+        function createStarryBackground() {
+            const starryBg = document.getElementById('starry-bg');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animation = `twinkle ${Math.random() * 5 + 3}s linear infinite`;
+                starryBg.appendChild(star);
+            }
+        }
+
+        function inviteFriends() {
+            const link = generateShareableLink();
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Link copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy link: ', err);
+            });
+        }
+
+        // Initial render
+        renderContent();
+    </script>
+</body>
+
+</html>
